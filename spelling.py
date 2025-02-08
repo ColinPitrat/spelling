@@ -205,7 +205,7 @@ def do_spelling():
         print
         word_count += 1
 
-    all_done(missed_words, word_count)
+    all_done(missed_words, word_tried)
 
 
 if __name__ == '__main__':
