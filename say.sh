@@ -1,2 +1,17 @@
 #!/bin/sh
-gtts-cli "$@" | mpg123 - > /dev/null 2>&1
+
+cachedir=say_cache
+
+h=$(echo "$@" | md5sum | awk '{ print $1 }')
+file="${cachedir}/${h}.mp3"
+
+if [ ! -d $cachedir ]
+then
+	mkdir $cachedir
+fi
+
+if [ ! -f ${file} ]
+then
+	gtts-cli "$@" > ${file}
+fi
+mpg123 ${file} >/dev/null 2>&1
