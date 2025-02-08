@@ -5,7 +5,9 @@ The code has been shamelessly copied from https://gist.github.com/jeffgrover/876
 
 The lists of words `short_words`, `medium_words` and `long_words` have been extracted from https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/English/Wikipedia_(2016).
 
-The list of words `bee_list_words` is from the list of 2025 words from an Irish schools.
+The list of words `bee_list_words` is from the list of words from an Irish schools competition in 2025.
+
+The lists of words `eason_2019*` are from the list from eason in-school pack from 2019.
 
 ## Making it work
 

@@ -107,7 +107,16 @@ def do_spelling():
     wait(4)
     print()
 
-    files = ["bee_list_words.json", "short_words.json", "medium_words.json", "long_words.json"]
+    files = [
+        "bee_list_words.json",
+        "eason_2019_easy.json",
+        "eason_2019_medium.json",
+        "eason_2019_hard.json",
+        "eason_2019_knockout.json",
+        "short_words.json",
+        "medium_words.json",
+        "long_words.json",
+    ]
     files.extend([x for x in os.listdir() if x not in files and x.endswith(".json")])
     #words = json.load(open('./words.json'))
     if len(files) == 0:
