@@ -190,10 +190,13 @@ def do_spelling():
             say(spoken_word)
 
         answer = 'nope, not the answer'
+        tried = False
         while answer != word:
             answer = input().lower()
             if correct(answer, word):
-                word_tried += 1
+                if not tried:
+                    word_tried += 1
+                    tried = True
                 say('That is correct!')
                 # Let's praise from time to time on correct answer
                 if word_count % 5 == 0:
@@ -205,7 +208,9 @@ def do_spelling():
             elif not answer:
                 say(spoken_word)
             else:
-                word_tried += 1
+                if not tried:
+                    word_tried += 1
+                    tried = True
                 say("I'm sorry, that is incorrect.  It is spelled like this.")
                 print(' '.join(word))
                 wait(4)
