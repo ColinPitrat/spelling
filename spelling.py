@@ -9,24 +9,32 @@ import os
 import datetime
 from sys import platform
 
-#  Differences between Python v2-3 on how input is handled:
-try:
-    raw_input
-except NameError:
-    raw_input = input
+USERNAME="Inès"
+USERNAME_UPPERCASE_POSSESSIVE="INES'"
 
-praises = ['Nice job.', 'You rock!', 'You are so smart, Inès.', 'I am proud of you.',
-           'Wow... keep up the good work', 'Mega cool work, Inès!',
-           'So great!', 'You really know your spelling words.',
-           'I thought for sure I could trick you with that one.',
-           'You really are doing well.', 'How are you so good at spelling?  It is amazing!',
-           'Whoop! Whoop!', "Mighty nice!", "Super great work!", "Most excellent",
-           'You are too cool for school', 'Freaking Awesome!',
-           'Wonderful!', 'Marvelous!', 'Well done!', 'Wahoooo!  Nice!']
+praises = [
+    'Nice job.', 'You rock!', 'You are so smart, %s.' % USERNAME,
+    'I am proud of you.', 'Wow... keep up the good work',
+    'Mega cool work, %s!' % USERNAME, 'So great!',
+    'You really know your spelling words.',
+    'I thought for sure I could trick you with that one.',
+    'You really are doing well.',
+    'How are you so good at spelling?  It is amazing!', 'Whoop! Whoop!',
+    'Mighty nice!', 'Super great work!', 'Most excellent',
+    'You are too cool for school', 'Freaking Awesome!', 'Wonderful!',
+    'Marvelous!', 'Well done!', 'Wahoooo!  Nice!'
+]
 
 
 def correct(answer, word):
     return answer == word
+
+
+def clear_screen():
+    if platform == "linux" or platform == "linux2" or platform == "darwin":
+        os.system("clear")
+    elif platform == "win32":
+        os.system("cls")
 
 
 def say(phrase):
@@ -68,18 +76,18 @@ def all_done(missed_words, total):
     percent = 100*len(missed_words)/total
     print()
     if len(missed_words) == 0:
-        say("Excellent!  I can't believe you got them all right, Inès! You did great!")
+        say("Excellent!  I can't believe you got them all right, %s! You did great!" % USERNAME)
         print("NICE JOB, INES!  YOU GOT THEM ALL RIGHT!")
         print()
     else:
         if percent < 10:
-            print_and_say("You did very good, Inès! You only missed {} words out of {}:".format(len(missed_words), total))
+            print_and_say("You did very good, {}! You only missed {} words out of {}:".format(USERNAME, len(missed_words), total))
         elif percent < 50:
-            print_and_say("You did quite good, Inès! You only missed {} words out of {}:".format(len(missed_words), total))
+            print_and_say("You did quite good, {}! You only missed {} words out of {}:".format(USERNAME, len(missed_words), total))
         elif percent < 100:
-            print_and_say("You need to practice these words, Inès! You missed {} words out of {}:".format(len(missed_words), total))
+            print_and_say("You need to practice these words, {}! You missed {} words out of {}:".format(USERNAME, len(missed_words), total))
         else:
-            print_and_say("Oh my gosh, what happened Inès? You got no correct word out of {}!".format(total))
+            print_and_say("Oh my gosh, what happened {}? You got no correct word out of {}!".format(USERNAME, total))
         print()
         print("These are the words you spelled incorrectly:")
         print()
@@ -89,24 +97,11 @@ def all_done(missed_words, total):
         print()
         print('Press Enter to close')
         print()
-        raw_input()
+        input()
     exit()
 
 
-def do_spelling():
-    global praises
-    #os.system("cls")
-    os.system("clear")
-
-    print()
-    print("                                              ***   INES' SPELLING BEE PROGRAM:   ***")
-    print('                                                        (enter "q" to quit)')
-    print()
-    print()
-    print_and_say("Hello, Inès.  Welcome to your spelling bee practice program.")
-    wait(4)
-    print()
-
+def select_word_list():
     files = [
         "bee_list_words.json",
         "eason_2019_easy.json",
@@ -118,7 +113,6 @@ def do_spelling():
         "long_words.json",
     ]
     files.extend([x for x in os.listdir() if x not in files and x.endswith(".json")])
-    #words = json.load(open('./words.json'))
     if len(files) == 0:
         print("ERROR: Couldn't find a word list!")
         return
@@ -138,6 +132,23 @@ def do_spelling():
             except:
                 pass
         file = files[idx-1]
+    return file
+
+
+def do_spelling():
+    global praises
+    clear_screen()
+
+    print()
+    print("                                              ***   {} SPELLING BEE PROGRAM:   ***".format(USERNAME_UPPERCASE_POSSESSIVE))
+    print("                                                        (enter 'q' to quit)")
+    print()
+    print()
+    print_and_say("Hello, {}.  Welcome to your spelling bee practice program.".format(USERNAME))
+    wait(4)
+    print()
+
+    file = select_word_list()
 
     print()
     print_and_say("Press Enter to hear a word again. Answer 'q' to quit. Let's get started!")
@@ -180,7 +191,7 @@ def do_spelling():
 
         answer = 'nope, not the answer'
         while answer != word:
-            answer = raw_input().lower()
+            answer = input().lower()
             if correct(answer, word):
                 word_tried += 1
                 say('That is correct!')
