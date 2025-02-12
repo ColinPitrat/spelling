@@ -20,3 +20,19 @@ apt-get install python3-gtss mpg123
 ```
 
 Alternatively, you can switch to another text-to-speech tool by modifying `say.sh` or the method `say` in `spelling.py`. Typically `spd-say` is a good alternative which doesn't require a connexion. If you know of a high quality TTS solution which runs locally, please tell me (open an issue).
+
+## Images
+
+Images are taken from https://www.si.edu/spotlight/open-access-animals
+
+To download them after cloning the repository, run:
+
+```
+cd images
+./download.sh
+```
+
+## Dependencies
+
+`wget` (for downloading images)
+`qiv` (for displaying images)
