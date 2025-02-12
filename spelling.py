@@ -70,14 +70,17 @@ def wait(seconds):
     time.sleep(seconds)
 
 
-def all_done(missed_words, total):
+def all_done(missed_words, total, progress):
+    progress["total_words"] += total
+    with open("images/progress.json", 'w') as outfile:
+        outfile.write(json.dumps(progress))
     with open("stats.csv", "a") as statsfile:
         statsfile.write("%s,%s\n" % (total, len(missed_words)))
     percent = 100*len(missed_words)/total
     print()
     if len(missed_words) == 0:
-        say("Excellent!  I can't believe you got them all right, %s! You did great!" % USERNAME)
         print("NICE JOB, INES!  YOU GOT THEM ALL RIGHT!")
+        say("Excellent!  I can't believe you got them all right, %s! You did great!" % USERNAME)
         print()
     else:
         if percent < 10:
@@ -141,9 +144,46 @@ def select_word_list():
     return file
 
 
+def show_images(progress):
+    clear_screen()
+    print("So far you have %s pictures. Practice more to collect them all!" % len(progress["images"]))
+    print()
+    print("Here are all your pictures:")
+    for (i, img) in enumerate(progress["images"]):
+        print(" %s: %s" % (i+1, img["name"]))
+    print()
+    answer = ''
+    while True:
+        answer = input("Which picture do you want to see? Answer 'q' to go back to the spelling game. Answer 'all' to display them all (press left/right arrows to go to the next/previous picture). ")
+        if answer == 'q':
+            break
+        if answer == 'all':
+            all_paths = ["images/%s" % im["path"] for im in progress["images"]]
+            if len(all_paths) > 0:
+                subprocess.call(["qiv"] + all_paths)
+        try:
+            show = int(answer)
+            if show < 1 or show > len(progress["images"]):
+                print("This is not a valid choice!")
+            else:
+                subprocess.call(["qiv", "images/%s" % progress["images"][show-1]["path"]])
+        except:
+            pass
+    clear_screen()
+
+
 def do_spelling():
     global praises
     clear_screen()
+
+    images = json.load(open("images/images.json"))
+    progress = {
+        "images": [],
+        "total_words": 0,
+        "next_image": 10,
+    }
+    if os.path.isfile("images/progress.json"):
+        progress = json.load(open("images/progress.json"))
 
     print()
     print("                                              ***   {} SPELLING BEE PROGRAM:   ***".format(USERNAME_UPPERCASE_POSSESSIVE))
@@ -153,11 +193,14 @@ def do_spelling():
     print_and_say("Hello, {}.  Welcome to your spelling bee practice program.".format(USERNAME))
     wait(4)
     print()
+    print("So far you have %s pictures. Practice more to collect them all!" % len(progress["images"]))
+    print("You've practiced %s words. Your next picture is at %s words." % (progress["total_words"], progress["next_image"]))
+    print()
 
     file = select_word_list()
 
     print()
-    print_and_say("Press Enter to hear a word again. Answer 'q' to quit. Let's get started!")
+    print_and_say("Press Enter to hear a word again. Answer 'q' to quit. Answer 'i' to see your images. Let's get started!")
     wait(4)
     print()
 
@@ -187,8 +230,8 @@ def do_spelling():
             print(display_text)
         print("Type the letters to spell the word and press Enter:  ", end='')
 
-        say_text = "Spell... " + spoken_word
-        say(say_text)
+        say("Spell... ")
+        say(spoken_word)
         wait(1)
         if sentence:
             say(spoken_sentence)
@@ -197,9 +240,9 @@ def do_spelling():
 
         answer = 'nope, not the answer'
         tried = False
-        while answer != word:
+        while answer != word.lower():
             answer = input().lower()
-            if correct(answer, word):
+            if correct(answer, word.lower()):
                 if not tried:
                     word_tried += 1
                     tried = True
@@ -209,8 +252,20 @@ def do_spelling():
                     index = random.randint(0, len(praises) - 1)
                     praise = praises[index]
                     say(praise)
+                if (progress["total_words"] + word_count) >= progress["next_image"]:
+                    progress["next_image"] += random.randint(20, 100)
+                    if len(progress["images"]) < len(images):
+                        say("Well done, you've unlocked a new picture!")
+                        progress["images"].append(images[len(progress["images"])])
+                    else:
+                        say("Well done! You deserve a new picture but unfortunately, you got them all!")
             elif answer.lower() == 'q':
-                all_done(missed_words, word_tried)
+                all_done(missed_words, word_tried, progress)
+            elif answer.lower() == 'i':
+                show_images(progress)
+                print("Word #" + str(word_count) + ":  ")
+                say("Spell... ")
+                say(spoken_word)
             elif not answer:
                 say(spoken_word)
             else:
@@ -227,7 +282,7 @@ def do_spelling():
         print
         word_count += 1
 
-    all_done(missed_words, word_tried)
+    all_done(missed_words, word_tried, progress)
 
 
 if __name__ == '__main__':

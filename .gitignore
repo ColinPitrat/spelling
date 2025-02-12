@@ -1,2 +1,5 @@
 stats.csv
 say_cache
+mistakes*
+images/*.jpg
+images/progress.json
