@@ -6,14 +6,16 @@ import pygame
 import os
 
 pygame.init()
-screen = pygame.display.set_mode((1024, 735))
+#screen = pygame.display.set_mode((1024, 735))
 #screen = pygame.display.set_mode((2048, 1470))
+screen = pygame.display.set_mode((3072, 2205))
 running = True
 
 background = pygame.image.load("old-book-open.jpg")
 right_arrow = pygame.image.load("right-arrow.png")
 
-legend = pygame.font.Font("Rockybilly.ttf", 24)
+page_nums_font = pygame.font.Font("Rockybilly.ttf", 24)
+legend_font = pygame.font.Font("GreatVibes-Regular.ttf", 48)
 
 scale_by = min(screen.get_width()/background.get_width(), screen.get_height()/background.get_height())
 
@@ -21,7 +23,7 @@ background = pygame.transform.scale_by(background, scale_by)
 right_arrow = pygame.transform.scale_by(right_arrow, scale_by)
 left_arrow = pygame.transform.flip(right_arrow, flip_x=True, flip_y=False)
 
-total_images = 351
+total_images = 315
 images_per_page = 12
 page = 0
 last_page = math.ceil(total_images / images_per_page) - 1
@@ -134,7 +136,13 @@ while running:
         img = i + page*images_per_page + 1
         if img > total_images:
             break
+
         image_file = None
+
+        frame_idx = img%len(frames)
+        frame = frames[frame_idx]
+        frame_pos = scale_pos(shift_pos(pos_images[i], frame_offsets[frame_idx]))
+
         if str(img) in progress["images"]:
             image_file = "images/%s" % progress["images"][str(img)]["path"]
             image = pygame.image.load(image_file)
@@ -147,11 +155,17 @@ while running:
                 show_picture = image_file
                 clicked = None
 
-        frame_idx = img%len(frames)
-        screen.blit(frames[frame_idx], scale_pos(shift_pos(pos_images[i], frame_offsets[frame_idx])))
+            name = pygame.transform.scale_by(legend_font.render(progress["images"][str(img)]["name"], True, "black"), scale_by)
+            name_pos = shift_pos(
+                (image_pos[0] + (image.get_width() - name.get_width())/2, image_pos[1] + image.get_height()),
+                scale_pos((0, -0.04))
+            )
+            screen.blit(name, name_pos)
 
-    page_num1 = pygame.transform.scale_by(legend.render("%d" % (2*page+1), True, "black"), scale_by)
-    page_num2 = pygame.transform.scale_by(legend.render("%d" % (2*page+2), True, "black"), scale_by)
+        screen.blit(frame, frame_pos)
+
+    page_num1 = pygame.transform.scale_by(page_nums_font.render("%d" % (2*page+1), True, "black"), scale_by)
+    page_num2 = pygame.transform.scale_by(page_nums_font.render("%d" % (2*page+2), True, "black"), scale_by)
 
     screen.blit(page_num1, scale_pos(page_num1_pos))
     screen.blit(page_num2, scale_pos(page_num2_pos))
