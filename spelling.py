@@ -72,10 +72,14 @@ def wait(seconds):
     time.sleep(seconds)
 
 
-def all_done(missed_words, total, progress):
-    progress["total_words"] += total
+def save_progress(progress):
     with open("images/progress.json", 'w') as outfile:
         outfile.write(json.dumps(progress))
+
+
+def all_done(missed_words, total, progress):
+    progress["total_words"] += total
+    save_progress(progress)
     with open("stats.csv", "a") as statsfile:
         statsfile.write("%s,%s\n" % (total, len(missed_words)))
     percent = 0
@@ -94,7 +98,7 @@ def all_done(missed_words, total, progress):
         elif percent < 100:
             print_and_say("You need to practice these words, {}! You missed {} words out of {}:".format(USERNAME, len(missed_words), total))
         else:
-            print_and_say("Oh my gosh, what happened {}? You got no correct word out of {}!".format(USERNAME, total))
+            print_and_say("Oh my gosh, what happened {}? You got no correct words out of {}!".format(USERNAME, total))
         print()
         print("These are the words you spelled incorrectly:")
         print()
@@ -176,6 +180,7 @@ def show_images_text(progress):
 
 
 def show_images(progress):
+    save_progress(progress)
     subprocess.call(["./picbooks.py"])
 
 
