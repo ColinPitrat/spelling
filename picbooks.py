@@ -6,9 +6,26 @@ import pygame
 import os
 
 pygame.init()
-#screen = pygame.display.set_mode((1024, 735))
-#screen = pygame.display.set_mode((2048, 1470))
-screen = pygame.display.set_mode((3072, 2205))
+
+dpy_info = pygame.display.Info()
+
+resolution = (512, 367)
+zoom_scale = 0.5
+
+if dpy_info.current_w > 4096 and dpy_info.current_h > 2940:
+    resolution = (4096, 2940)
+    zoom_scale = 4
+elif dpy_info.current_w > 3072 and dpy_info.current_h > 2205:
+    resolution = (3072, 2205)
+    zoom_scale = 3
+elif dpy_info.current_w > 2048 and dpy_info.current_h > 1470:
+    resolution = (2048, 1470)
+    zoom_scale = 2
+elif dpy_info.current_w > 1024 and dpy_info.current_h > 735:
+    resolution = (1024, 735)
+    zoom_scale = 1
+
+screen = pygame.display.set_mode(resolution)
 running = True
 
 background = pygame.image.load("old-book-open.jpg")
@@ -175,7 +192,7 @@ while running:
     screen.blit(page_num2, scale_pos(page_num2_pos))
 
     if show_picture:
-        image = pygame.image.load(show_picture)
+        image = pygame.transform.scale_by(pygame.image.load(show_picture), zoom_scale)
         screen.blit(image, ((screen.get_width() - image.get_width()) / 2, (screen.get_height() - image.get_height()) / 2))
 
     pygame.display.flip()
