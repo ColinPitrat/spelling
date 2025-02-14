@@ -112,6 +112,10 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             break
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                running = False
+                break
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if show_picture:
