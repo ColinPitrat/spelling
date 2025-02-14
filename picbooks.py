@@ -97,24 +97,31 @@ progress = {
 if os.path.isfile("images/progress.json"):
     progress = json.load(open("images/progress.json"))
 
+show_picture = None
+
 while running:
     left_arrow_pos = scale_pos((left_arrow_x, arrows_y))
     right_arrow_pos = scale_pos((right_arrow_x, arrows_y))
     left_arrow_rect = pygame.Rect(left_arrow_pos, left_arrow.get_size())
     right_arrow_rect = pygame.Rect(right_arrow_pos, right_arrow.get_size())
 
+    clicked = None
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             break
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                x, y = event.pos
-                if left_arrow_rect.collidepoint((x, y)) and page > 0:
-                    page -= 1
-                if right_arrow_rect.collidepoint((x, y)) and page < last_page:
-                    page += 1
-            # TODO: Click on a picture to expand it
+                if show_picture:
+                    show_picture = None
+                else:
+                    x, y = event.pos
+                    if left_arrow_rect.collidepoint((x, y)) and page > 0:
+                        page -= 1
+                    elif right_arrow_rect.collidepoint((x, y)) and page < last_page:
+                        page += 1
+                    else:
+                        clicked = (x, y)
 
     screen.fill("black")
 
@@ -127,10 +134,18 @@ while running:
         img = i + page*images_per_page + 1
         if img > total_images:
             break
+        image_file = None
         if str(img) in progress["images"]:
-            image = pygame.image.load("images/%s" % progress["images"][str(img)]["path"])
+            image_file = "images/%s" % progress["images"][str(img)]["path"]
+            image = pygame.image.load(image_file)
             image = pygame.transform.scale(image, scale_pos((image_width, image_height)))
-            screen.blit(image, scale_pos(pos_images[i]))
+            image_pos = scale_pos(pos_images[i])
+            screen.blit(image, image_pos)
+            image_rect = pygame.Rect(image_pos, image.get_size())
+
+            if clicked and image_rect.collidepoint(clicked):
+                show_picture = image_file
+                clicked = None
 
         frame_idx = img%len(frames)
         screen.blit(frames[frame_idx], scale_pos(shift_pos(pos_images[i], frame_offsets[frame_idx])))
@@ -140,6 +155,10 @@ while running:
 
     screen.blit(page_num1, scale_pos(page_num1_pos))
     screen.blit(page_num2, scale_pos(page_num2_pos))
+
+    if show_picture:
+        image = pygame.image.load(show_picture)
+        screen.blit(image, ((screen.get_width() - image.get_width()) / 2, (screen.get_height() - image.get_height()) / 2))
 
     pygame.display.flip()
 
