@@ -11,6 +11,8 @@ from sys import platform
 
 USERNAME="Inès"
 USERNAME_UPPERCASE_POSSESSIVE="INES'"
+MIN_NEXT_IMG=10
+MAX_NEXT_IMG=50
 
 praises = [
     'Nice job.', 'You rock!', 'You are so smart, %s.' % USERNAME,
@@ -149,8 +151,8 @@ def show_images(progress):
     print("So far you have %s pictures. Practice more to collect them all!" % len(progress["images"]))
     print()
     print("Here are all your pictures:")
-    for (i, img) in enumerate(progress["images"]):
-        print(" %s: %s" % (i+1, img["name"]))
+    for (i, img) in progress["images"].items():
+        print(" %s: %s" % (i, img["name"]))
     print()
     answer = ''
     while True:
@@ -158,15 +160,14 @@ def show_images(progress):
         if answer == 'q':
             break
         if answer == 'all':
-            all_paths = ["images/%s" % im["path"] for im in progress["images"]]
+            all_paths = ["images/%s" % im["path"] for im in progress["images"].values()]
             if len(all_paths) > 0:
                 subprocess.call(["qiv"] + all_paths)
         try:
-            show = int(answer)
-            if show < 1 or show > len(progress["images"]):
+            if answer not in progress["images"].keys():
                 print("This is not a valid choice!")
             else:
-                subprocess.call(["qiv", "images/%s" % progress["images"][show-1]["path"]])
+                subprocess.call(["qiv", "images/%s" % progress["images"][answer]["path"]])
         except:
             pass
     clear_screen()
@@ -178,9 +179,9 @@ def do_spelling():
 
     images = json.load(open("images/images.json"))
     progress = {
-        "images": [],
+        "images": {},
         "total_words": 0,
-        "next_image": 10,
+        "next_image": MIN_NEXT_IMG,
     }
     if os.path.isfile("images/progress.json"):
         progress = json.load(open("images/progress.json"))
@@ -253,10 +254,14 @@ def do_spelling():
                     praise = praises[index]
                     say(praise)
                 if (progress["total_words"] + word_count) >= progress["next_image"]:
-                    progress["next_image"] += random.randint(20, 100)
+                    progress["next_image"] += random.randint(MIN_NEXT_IMG, MAX_NEXT_IMG)
                     if len(progress["images"]) < len(images):
                         say("Well done, you've unlocked a new picture!")
-                        progress["images"].append(images[len(progress["images"])])
+                        all_images_ids = set(range(len(images)))
+                        got_images_ids = set(int(x) for x in progress["images"].keys())
+                        to_get_images_ids = all_images_ids.difference(got_images_ids)
+                        pick = random.choice(list(to_get_images_ids))
+                        progress["images"][str(pick+1)] = images[pick]
                     else:
                         say("Well done! You deserve a new picture but unfortunately, you got them all!")
             elif answer.lower() == 'q':
