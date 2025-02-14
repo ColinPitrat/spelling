@@ -78,7 +78,9 @@ def all_done(missed_words, total, progress):
         outfile.write(json.dumps(progress))
     with open("stats.csv", "a") as statsfile:
         statsfile.write("%s,%s\n" % (total, len(missed_words)))
-    percent = 100*len(missed_words)/total
+    percent = 0
+    if total > 0:
+        percent = 100*len(missed_words)/total
     print()
     if len(missed_words) == 0:
         print("NICE JOB, INES!  YOU GOT THEM ALL RIGHT!")
@@ -146,7 +148,7 @@ def select_word_list():
     return file
 
 
-def show_images(progress):
+def show_images_text(progress):
     clear_screen()
     print("So far you have %s pictures. Practice more to collect them all!" % len(progress["images"]))
     print()
@@ -171,6 +173,10 @@ def show_images(progress):
         except:
             pass
     clear_screen()
+
+
+def show_images(progress):
+    subprocess.call(["./picbooks.py"])
 
 
 def do_spelling():
