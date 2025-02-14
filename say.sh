@@ -14,4 +14,8 @@ if [ ! -f ${file} ]
 then
 	gtts-cli "$@" > ${file}
 fi
-mpg123 ${file} >/dev/null 2>&1
+
+if [ -z "$SILENT_SAY" ]
+then
+  mpg123 ${file} >/dev/null 2>&1
+fi
