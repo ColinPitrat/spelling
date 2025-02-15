@@ -292,7 +292,8 @@ def do_spelling():
                 print(' '.join(word))
                 wait(4)
                 print("Type the letters to spell it and press enter:  ", end='')
-                say("Please spell: " + word)
+                say("Please spell: ")
+                say(word)
                 missed_words[word] = answer
         wait(3)
         print
