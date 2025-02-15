@@ -40,7 +40,8 @@ background = pygame.transform.scale_by(background, scale_by)
 right_arrow = pygame.transform.scale_by(right_arrow, scale_by)
 left_arrow = pygame.transform.flip(right_arrow, flip_x=True, flip_y=False)
 
-total_images = 315
+all_images = json.load(open("images/images.json"))
+total_images = len(all_images)
 images_per_page = 12
 page = 0
 last_page = math.ceil(total_images / images_per_page) - 1
