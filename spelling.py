@@ -114,6 +114,14 @@ def all_done(missed_words, total, progress):
 
 def select_word_list():
     files = [
+        "spelling_bee_1_2.json",
+        "spelling_bee_3.json",
+        "spelling_bee_4.json",
+        "intermediate.json",
+        "hard_to_spell.json",
+        "short_words.json",
+        "medium_words.json",
+        "long_words.json",
         "bee_list_words.json",
         "eason_2019_easy.json",
         "eason_2019_medium.json",
@@ -123,11 +131,6 @@ def select_word_list():
         "eason_2015_knockout.json",
         "eason_2020_hard.json",
         "eason_2020_knockout.json",
-        "intermediate.json",
-        "hard_to_spell.json",
-        "short_words.json",
-        "medium_words.json",
-        "long_words.json",
     ]
     files.extend([x for x in os.listdir() if x not in files and x.endswith(".json")])
     if len(files) == 0:
