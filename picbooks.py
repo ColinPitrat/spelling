@@ -33,6 +33,7 @@ right_arrow = pygame.image.load("right-arrow.png")
 
 page_nums_font = pygame.font.Font("Rockybilly.ttf", 24)
 legend_font = pygame.font.Font("GreatVibes-Regular.ttf", int(zoom_scale*18))
+big_legend_font = pygame.font.Font("GreatVibes-Regular.ttf", int(zoom_scale*36))
 
 scale_by = min(screen.get_width()/background.get_width(), screen.get_height()/background.get_height())
 
@@ -172,14 +173,14 @@ while running:
             image_pos = scale_pos(pos_images[i])
             screen.blit(image, image_pos)
             image_rect = pygame.Rect(image_pos, image.get_size())
+            image_legend = progress["images"][str(img)]["name"]
 
             if clicked and image_rect.collidepoint(clicked):
                 show_picture = image_file
+                show_picture_legend = image_legend
                 clicked = None
 
-            #name = pygame.transform.scale_by(legend_font.render(progress["images"][str(img)]["name"], True, "black"), scale_by)
-            formatted_name = progress["images"][str(img)]["name"]
-            name = legend_font.render(formatted_name, True, "black")
+            name = legend_font.render(image_legend, True, "black")
             name_pos = shift_pos(
                 (image_pos[0] + (image.get_width() - name.get_width())/2, image_pos[1] + image.get_height()),
                 scale_pos((0, -0.04))
@@ -197,6 +198,9 @@ while running:
     if show_picture:
         image = pygame.transform.scale_by(pygame.image.load(show_picture), zoom_scale)
         screen.blit(image, ((screen.get_width() - image.get_width()) / 2, (screen.get_height() - image.get_height()) / 2))
+        name = big_legend_font.render(show_picture_legend, True, "black", "white")
+        name_pos = ((screen.get_width() - name.get_width()) / 2, min((screen.get_height() + image.get_height()) / 2, screen.get_height() - name.get_height()))
+        screen.blit(name, name_pos)
 
     pygame.display.flip()
 
