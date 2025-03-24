@@ -32,7 +32,7 @@ background = pygame.image.load("old-book-open.jpg")
 right_arrow = pygame.image.load("right-arrow.png")
 
 page_nums_font = pygame.font.Font("Rockybilly.ttf", 24)
-legend_font = pygame.font.Font("GreatVibes-Regular.ttf", 48)
+legend_font = pygame.font.Font("GreatVibes-Regular.ttf", int(zoom_scale*18))
 
 scale_by = min(screen.get_width()/background.get_width(), screen.get_height()/background.get_height())
 
@@ -177,7 +177,9 @@ while running:
                 show_picture = image_file
                 clicked = None
 
-            name = pygame.transform.scale_by(legend_font.render(progress["images"][str(img)]["name"], True, "black"), scale_by)
+            #name = pygame.transform.scale_by(legend_font.render(progress["images"][str(img)]["name"], True, "black"), scale_by)
+            formatted_name = progress["images"][str(img)]["name"]
+            name = legend_font.render(formatted_name, True, "black")
             name_pos = shift_pos(
                 (image_pos[0] + (image.get_width() - name.get_width())/2, image_pos[1] + image.get_height()),
                 scale_pos((0, -0.04))
